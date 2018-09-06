@@ -46,5 +46,7 @@ class SetupProject(Application):
         self._setup_wizard = setup_project.SetupProjectWizard(
             project=self.engine.context.project,
         )
-        self._setup_wizard.exec_()
+        from sgtk.platform.qt import QtCore, QtGui
+        self._setup_wizard.setWindowFlags(self._setup_wizard.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        QtGui.QDialog.exec_(self._setup_wizard)
         
