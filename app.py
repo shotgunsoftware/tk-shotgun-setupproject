@@ -8,6 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import sys
 
 from sgtk.platform import Application
 
@@ -48,7 +49,8 @@ class SetupProject(Application):
         )
 
         from sgtk.platform.qt import QtCore
-        self._setup_wizard.setWindowFlags(self._setup_wizard.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        if sys.platform == "win32":
+            self._setup_wizard.setWindowFlags(self._setup_wizard.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self._setup_wizard.exec_()
         self._setup_wizard.shutdown()
         self._setup_wizard.hide()
