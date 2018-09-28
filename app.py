@@ -49,9 +49,23 @@ class SetupProject(Application):
         )
 
         from sgtk.platform.qt import QtCore
-        if sys.platform == "win32":
+
+        # We want this to be forced on top, but we don't need to do that on OSX. Oddly,
+        # doing so on OSX causes stability problems on launch, but it's a non-issue,
+        # because the dialog launches on top by itself on that OS. We have problems on
+        # CentOS 6 and Windows 10 where it pops up behind everything, so this is the
+        # heavy-handed approach to resolving that.
+        if sys.platform != "darwin":
             self._setup_wizard.setWindowFlags(self._setup_wizard.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+
         self._setup_wizard.exec_()
+
+        # Once we're done, calling shutdown will ensure we're not leaving any threads
+        # running. Hiding the dialog is an odd requirement for the external_config API. The
+        # wizard doesn't appear to be garbage collected once it's closed the way most
+        # other dialogs are, so there's a provision in external_config to also check
+        # whether any widgets are visible before closing down its QApplication when
+        # finishing up with an external process.
         self._setup_wizard.shutdown()
         self._setup_wizard.hide()
         
